@@ -1,0 +1,36 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*secret*
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.python-version
+
+# Packaging and test output
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Dependency directories and tooling output
+node_modules/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+
+# Generated project data
+data/pairs.csv
+data/intents.json
+data/retrieval_index/
+data/pipeline_results.json
