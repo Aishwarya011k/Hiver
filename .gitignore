@@ -34,3 +34,6 @@ data/pairs.csv
 data/intents.json
 data/retrieval_index/
 data/pipeline_results.json
+
+# Large source archive kept outside the Git history
+data/archive/twcs/twcs.csv
