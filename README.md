@@ -9,12 +9,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# put your OPENAI_API_KEY in .env
+# choose a provider in .env: claude, openai, or ollama
 mkdir -p data
 # put Kaggle twcs.csv at data/archive/twcs/twcs.csv
 ```
 
-The first `sentence-transformers` run downloads `all-MiniLM-L6-v2`; all later embedding work is local. OpenAI calls use only `gpt-4o-mini`, are cached in `.cache/llm`, retried on rate limits, and separated by a conservative two-second interval. The first run may therefore be slow; warm-cache reruns reuse responses.
+The first `sentence-transformers` run downloads `all-MiniLM-L6-v2`; all later embedding work is local. Claude is supported when you have credits (`LLM_PROVIDER=claude`, `ANTHROPIC_API_KEY`), OpenAI works with `OPENAI_API_KEY`, and local inference is available through Ollama with `LLM_PROVIDER=ollama` and `ollama pull llama3.2:3b` (or set `OLLAMA_MODEL` to another installed model). The workspace default is currently `ollama` because Anthropic requires paid credits. Responses are cached in `.cache/llm`, retried on rate limits, and separated by a conservative two-second interval. The first run may therefore be slow; warm-cache reruns reuse responses.
 
 ## Exact reproduction
 

@@ -7,7 +7,7 @@ ARGS=()
 if [[ -n "$LIMIT" ]]; then ARGS+=(--limit "$LIMIT"); fi
 if [[ -n "$DRY" ]]; then ARGS+=(--dry-run); fi
 
-python3 data_prep.py --input data/archive/twcs/twcs.csv --brand AmazonHelp "${ARGS[@]}"
+python3 data_prep.py --input data/twcs.csv --brand AmazonHelp "${ARGS[@]}"
 python3 intent_taxonomy.py "${ARGS[@]}"
 python3 retrieval.py "${ARGS[@]}"
 python3 eval/build_golden_set.py "${ARGS[@]}"

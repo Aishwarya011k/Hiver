@@ -31,15 +31,20 @@ def build_pairs(input_csv: str, brand: str, sample_size: int = 700, seed: int = 
     frame["response_tweet_id"] = frame["response_tweet_id"].fillna("").astype(str)
     inbound = frame["inbound"].astype(str).str.lower().isin(["true", "1"])
     brand_mask = frame["text"].fillna("").str.contains("@" + brand.lstrip("@"), case=False, regex=False)
-    replies = frame.loc[~inbound].set_index("tweet_id")
+    outbound = frame.loc[~inbound]
+    replies = outbound.set_index("tweet_id")
+    reverse_replies = (
+        outbound.loc[outbound["in_response_to_tweet_id"].ne("")]
+        .drop_duplicates("in_response_to_tweet_id")
+        .set_index("in_response_to_tweet_id")
+    )
     rows = []
     for _, customer in frame.loc[inbound & brand_mask].iterrows():
         reply_id = customer["response_tweet_id"]
         reply = replies.loc[reply_id] if reply_id in replies.index else None
         if reply is None:
-            reverse = frame.loc[frame["in_response_to_tweet_id"] == customer["tweet_id"]]
-            reverse = reverse.loc[~inbound]
-            reply = reverse.iloc[0] if not reverse.empty else None
+            reply = (reverse_replies.loc[customer["tweet_id"]]
+                     if customer["tweet_id"] in reverse_replies.index else None)
         if reply is None:
             continue
         message, resolution = clean_text(customer["text"]), clean_text(reply["text"])
@@ -54,14 +59,14 @@ def build_pairs(input_csv: str, brand: str, sample_size: int = 700, seed: int = 
         "input_rows": len(frame), "matched_pairs": len(rows), "output_pairs": len(pairs),
         "brand": brand.lstrip("@"), "random_seed": seed, "sample_size": sample_size,
         "filters": ["inbound customer rows", "message contains chosen @brand", "linked non-inbound reply",
-                    "strip URLs and mentions", "drop messages/resolutions shorter than 8 chars", "deduplicate"],
+                    "strip URLs and mentions", "drop messages/resolutions shorter than 8 ch ars", "deduplicate"],
     }
     return pairs, log
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="data/archive/twcs/twcs.csv")
+    parser.add_argument("--input", default="data/twcs.csv")
     parser.add_argument("--brand", default="AmazonHelp")
     parser.add_argument("--output", default="data/pairs.csv")
     parser.add_argument("--limit", type=int, default=None, help="Debug cap after preparation")
